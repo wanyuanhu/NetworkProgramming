@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">NetworkProgramming</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="page1">page1</string>
+    <string name="page2">page2</string>
+    <string name="page3">page3</string>
+</resources>
