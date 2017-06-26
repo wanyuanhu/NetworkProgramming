@@ -20,7 +20,7 @@ public class ProvinceBean {
     public ProvinceBean(String provinceCode, String provinceName) {
         this.provinceCode = provinceCode;
         this.provinceName = provinceName;
-        cityList = new ArrayList<CityBean>();
+        cityList = new ArrayList<>();
     }
 
     public String getProvinceCode() {
@@ -47,9 +47,29 @@ public class ProvinceBean {
         this.cityList = cityList;
     }
 
+    public List<String> getCityName() {
+        List<String> list = new ArrayList<>();
+        if (null != cityList) {
+            for (CityBean cityBean : cityList) {
+                list.add(cityBean.getCityName());
+            }
+        }
+        return list;
+    }
+
+    public List<List<String>> getCountyName() {
+        List<List<String>> list = new ArrayList<>();
+        if (null != cityList) {
+            for (CityBean cityBean : cityList) {
+                list.add(cityBean.getAreaName());
+            }
+        }
+        return list;
+    }
+
     @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (CityBean cityBean : cityList) {
             sb.append(cityBean);
         }

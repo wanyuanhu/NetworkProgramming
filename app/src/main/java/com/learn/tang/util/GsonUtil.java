@@ -1,6 +1,5 @@
 package com.learn.tang.util;
 
-import android.util.ArrayMap;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -19,6 +18,10 @@ import java.util.Map;
 public class GsonUtil {
     private static List<ProvinceBean> provinceList = null;
 
+    public static List<ProvinceBean> getProvinceList() {
+        return provinceList;
+    }
+
     public static void logSelf(String arg){
         Log.d("app",arg);
     }
@@ -29,6 +32,7 @@ public class GsonUtil {
             }.getType());
             provinceList = map.get("CityCode");
         }
+        logSelf("handleProvinceFromJson list:"+ provinceList.size());
         if (provinceList.size() > 0) {
             for (ProvinceBean provinceBean : provinceList) {
                 logSelf(provinceBean.toString());
@@ -74,8 +78,8 @@ public class GsonUtil {
             if (provinceJson.getProvinceName().equals(provinceName)) {
                 for (CityBean cityJson : provinceJson.getCityList()) {
                     if (cityJson.getCityName().equals(cityName)) {
-                        if (cityJson.getAreaList().size() > 0) result = true;
-                        for (AreaBean countyJson : cityJson.getAreaList()) {
+                        if (cityJson.getCountyList().size() > 0) result = true;
+                        for (AreaBean countyJson : cityJson.getCountyList()) {
                             //TODO;
                             //处理每一个countyJson
                         }

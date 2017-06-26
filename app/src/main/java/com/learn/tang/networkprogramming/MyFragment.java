@@ -2,23 +2,20 @@ package com.learn.tang.networkprogramming;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.util.ArrayMap;
-import android.util.JsonReader;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.bigkoo.pickerview.OptionsPickerView;
+import com.learn.tang.bean.ProvinceBean;
 import com.learn.tang.util.GsonUtil;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -29,7 +26,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 
 /**
@@ -43,20 +39,36 @@ public class MyFragment extends Fragment implements View.OnClickListener {
 
     private static int index = 0;
     private static final String TAG = "LIFE";
+    private static final int START_ADAPTER = 0;
+    private static final int RESULT_URL = 1;
 
     private TextView tv;
     private Button btn1, btn2;
-    private Spinner province, city, area;
 
-    private JSONObject jsonObject;
-    private List<String> allProv = new ArrayList<String>();
-    private Map<String, String> cityMap = new ArrayMap<String, String>();
-    private Map<String, String> areaMap = new ArrayMap<String, String>();
-
+    private List<ProvinceBean> provinceList = new ArrayList<>();
+    private List<String> allProv = new ArrayList<>();
+    private List<List<String>> cityList = new ArrayList<>();
+    private List<List<List<String>>> countyList = new ArrayList<>();
+    private OptionsPickerView optionsPickerView = null;
 
     private void log(String method) {
         Log.d(TAG, method);
     }
+
+    private Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case START_ADAPTER:
+                    setAdapter();
+                    break;
+                case RESULT_URL:
+                    tv.setText((String)msg.obj);
+                default:
+                    break;
+            }
+        }
+    };
 
     @Override
     public void onAttach(Context context) {
@@ -74,14 +86,8 @@ public class MyFragment extends Fragment implements View.OnClickListener {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
-        tv = (TextView) view.findViewById(R.id.tv);
-        btn1 = (Button) view.findViewById(R.id.httpurlconnectionget);
-        btn2 = (Button) view.findViewById(R.id.httpurlconnectionpost);
-        province = (Spinner) view.findViewById(R.id.province);
-        city = (Spinner) view.findViewById(R.id.city);
-        area = (Spinner) view.findViewById(R.id.county);
+        initView(view);
         log("createview");
-        initJson();
         return view;
     }
 
@@ -133,7 +139,9 @@ public class MyFragment extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.httpurlconnectionget:
-                ParseJson();
+                if (null != optionsPickerView) {
+                    optionsPickerView.show();
+                }
                 break;
             case R.id.httpurlconnectionpost:
                 break;
@@ -142,9 +150,42 @@ public class MyFragment extends Fragment implements View.OnClickListener {
         }
     }
 
-    private String getWeatherInfo(URL url) {
+    private void initView(View view) {
+        tv = (TextView) view.findViewById(R.id.tv);
+        btn1 = (Button) view.findViewById(R.id.httpurlconnectionget);
+        btn2 = (Button) view.findViewById(R.id.httpurlconnectionpost);
+        btn1.setOnClickListener(this);
+        btn2.setOnClickListener(this);
+        startParse();
+    }
+
+    private void setAdapter() {
+        optionsPickerView = new OptionsPickerView.Builder(getContext(), new OptionsPickerView.OnOptionsSelectListener() {
+
+            @Override
+            public void onOptionsSelect(int options1, int options2, int options3, View v) {
+                final String code = provinceList.get(options1).getCityList().get(options2).getCountyList().get(options3).getCode();
+                log("select code:"+code);
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        String result = getWeatherInfo(code);
+                        Message msg = Message.obtain();
+                        msg.what = RESULT_URL;
+                        msg.obj = result;
+                        mHandler.sendMessage(msg);
+                    }
+                }).start();
+            }
+        }).build();
+        optionsPickerView.setPicker(allProv, cityList, countyList);
+    }
+
+    private String getWeatherInfo(String code) {
         String result = null;
+        log("code:"+getString(R.string.weatherURL,code));
         try {
+            URL url = new URL(getString(R.string.weatherURL, code));
             HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
             httpURLConnection.setRequestMethod("GET");
             httpURLConnection.setConnectTimeout(5 * 1000);
@@ -154,6 +195,7 @@ public class MyFragment extends Fragment implements View.OnClickListener {
             httpURLConnection.connect();
             if (httpURLConnection.getResponseCode() == 200) {
                 result = streamToString(httpURLConnection.getInputStream());
+                log("response:"+result);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -184,9 +226,30 @@ public class MyFragment extends Fragment implements View.OnClickListener {
         return sb.toString();
     }
 
-    private void initJson() {
+    private void startParse() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (allProv.size() == 0) {
+                    ParseJson();
+                    provinceList = GsonUtil.getProvinceList();
+                    if (null != provinceList) {
+                        for (ProvinceBean province : provinceList) {
+                            allProv.add(province.getProvinceName());
+                            cityList.add(province.getCityName());
+                            countyList.add(province.getCountyName());
+                        }
+                    }
+                }
+                mHandler.sendEmptyMessage(START_ADAPTER);
+            }
+        }).start();
+    }
+
+    private void ParseJson() {
+        log("ParseJson start");
         try {
-            InputStreamReader isr = new InputStreamReader(getActivity().getAssets().open("weather_city.json"), "UTF-8");
+            InputStreamReader isr = new InputStreamReader(getResources().getAssets().open("weather_city.json"), "UTF-8");
             BufferedReader br = new BufferedReader(isr);
             String line = null;
             StringBuilder builder = new StringBuilder();
@@ -194,38 +257,10 @@ public class MyFragment extends Fragment implements View.OnClickListener {
                 builder.append(line);
             }
             br.close();
-            jsonObject = new JSONObject(builder.toString());
-            JSONArray citycode = jsonObject.getJSONArray("CityCode");
-            for (int i = 0;i<citycode.length();i++){
-                JSONObject provinces = citycode.getJSONObject(i);
-                allProv.add(provinces.getString("provinceName"));
-                JSONArray cityList = provinces.getJSONArray("cityList");
-                for (int j= 0;j<cityList.length();j++){
-                    JSONObject city_one = cityList.getJSONObject(j);
-
-                }
-            }
+            GsonUtil.handleProvinceFromJson(builder.toString());
         } catch (IOException e) {
             e.printStackTrace();
-        } catch (JSONException e) {
-            e.printStackTrace();
         }
-//        jsonObject = new JSONObject()
-    }
-    private void ParseJson(){
-            try {
-                InputStreamReader isr = new InputStreamReader(getActivity().getAssets().open("weather_city.json"), "UTF-8");
-                BufferedReader br = new BufferedReader(isr);
-                String line = null;
-                StringBuilder builder = new StringBuilder();
-                while ((line = br.readLine()) != null) {
-                    builder.append(line);
-                }
-                br.close();
-                GsonUtil.handleProvinceFromJson(builder.toString());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
     }
 
 }

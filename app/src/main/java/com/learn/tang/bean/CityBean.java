@@ -10,7 +10,7 @@ import java.util.List;
 public class CityBean {
     private String cityCode;
     private String cityName;
-    List<AreaBean> areaList;
+    List<AreaBean> countyList;
 
     public CityBean() {
 
@@ -19,7 +19,7 @@ public class CityBean {
     public CityBean(String cityCode, String cityName) {
         this.cityCode = cityCode;
         this.cityName = cityName;
-        areaList = new ArrayList<AreaBean>();
+        countyList = new ArrayList<AreaBean>();
     }
 
     public String getCityCode() {
@@ -38,24 +38,36 @@ public class CityBean {
         this.cityName = cityName;
     }
 
-    public List<AreaBean> getAreaList() {
-        return areaList;
+    public List<AreaBean> getCountyList() {
+        return countyList;
     }
 
-    public void setAreaList(List<AreaBean> areaList) {
-        this.areaList = areaList;
+    public void setCountyList(List<AreaBean> countyList) {
+        this.countyList = countyList;
+    }
+
+    public List<String> getAreaName() {
+        List<String> list = new ArrayList<String>();
+        if (null != countyList) {
+            for (AreaBean areaBean : countyList) {
+                list.add(areaBean.getName());
+            }
+        }
+        return list;
     }
 
     @Override
     public String toString() {
         StringBuffer sb = new StringBuffer();
-        for (AreaBean areaBean : areaList) {
-            sb.append(areaBean);
+        if (null != countyList) {
+            for (AreaBean areaBean : countyList) {
+                sb.append(areaBean);
+            }
         }
         return "CityBean{" +
                 "cityCode='" + cityCode + '\'' +
                 ", cityName='" + cityName + '\'' +
-                ", areaList=" + sb.toString() +
+                ", countyList=" + sb.toString() +
                 '}';
     }
 }
