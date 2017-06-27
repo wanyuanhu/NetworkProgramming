@@ -7,6 +7,7 @@
     <string name="page2">page2</string>
     <string name="page3">page3</string>
     <string name="httpurlget">HttpUrlConnectionget</string>
-    <string name="httpurlpost">HttpUrlConnectionpost</string>
+    <string name="volley_string">volleyString</string>
+    <string name="volley_json">volleyJson</string>
     <string name="weatherURL">http://www.weather.com.cn/data/sk/%1$s.html</string>
 </resources>

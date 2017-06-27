@@ -13,9 +13,18 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.bigkoo.pickerview.OptionsPickerView;
 import com.learn.tang.bean.ProvinceBean;
 import com.learn.tang.util.GsonUtil;
+
+import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -43,7 +52,9 @@ public class MyFragment extends Fragment implements View.OnClickListener {
     private static final int RESULT_URL = 1;
 
     private TextView tv;
-    private Button btn1, btn2;
+    private Button btn1, btn2, btn3;
+
+    private RequestQueue mqueue;
 
     private List<ProvinceBean> provinceList = new ArrayList<>();
     private List<String> allProv = new ArrayList<>();
@@ -63,7 +74,7 @@ public class MyFragment extends Fragment implements View.OnClickListener {
                     setAdapter();
                     break;
                 case RESULT_URL:
-                    tv.setText((String)msg.obj);
+                    tv.setText((String) msg.obj);
                 default:
                     break;
             }
@@ -143,7 +154,35 @@ public class MyFragment extends Fragment implements View.OnClickListener {
                     optionsPickerView.show();
                 }
                 break;
-            case R.id.httpurlconnectionpost:
+            case R.id.volleyString:
+                StringRequest stringRequest = new StringRequest("https://www.baidu.com", new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        tv.setText(response);
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e(TAG, error.getMessage(), error);
+                    }
+                });
+                mqueue.add(stringRequest);
+                break;
+            case R.id.volleyJson:
+                JsonObjectRequest mjsonObjectRequest = new JsonObjectRequest(Request.Method.POST,
+                        "http://api.1-blog.com/biz/bizserver/article/list.do", null,
+                        new Response.Listener<JSONObject>() {
+                            @Override
+                            public void onResponse(JSONObject response) {
+                                tv.setText(response.toString());
+                            }
+                        }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e(TAG, error.getMessage(), error);
+                    }
+                });
+                mqueue.add(mjsonObjectRequest);
                 break;
             default:
                 break;
@@ -153,10 +192,15 @@ public class MyFragment extends Fragment implements View.OnClickListener {
     private void initView(View view) {
         tv = (TextView) view.findViewById(R.id.tv);
         btn1 = (Button) view.findViewById(R.id.httpurlconnectionget);
-        btn2 = (Button) view.findViewById(R.id.httpurlconnectionpost);
+        btn2 = (Button) view.findViewById(R.id.volleyString);
+        btn3 = (Button) view.findViewById(R.id.volleyJson);
         btn1.setOnClickListener(this);
         btn2.setOnClickListener(this);
+        btn3.setOnClickListener(this);
         startParse();
+        if (null == mqueue) {
+            mqueue = Volley.newRequestQueue(getContext());
+        }
     }
 
     private void setAdapter() {
@@ -165,7 +209,7 @@ public class MyFragment extends Fragment implements View.OnClickListener {
             @Override
             public void onOptionsSelect(int options1, int options2, int options3, View v) {
                 final String code = provinceList.get(options1).getCityList().get(options2).getCountyList().get(options3).getCode();
-                log("select code:"+code);
+                log("select code:" + code);
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -183,7 +227,7 @@ public class MyFragment extends Fragment implements View.OnClickListener {
 
     private String getWeatherInfo(String code) {
         String result = null;
-        log("code:"+getString(R.string.weatherURL,code));
+        log("code:" + getString(R.string.weatherURL, code));
         try {
             URL url = new URL(getString(R.string.weatherURL, code));
             HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
@@ -195,7 +239,7 @@ public class MyFragment extends Fragment implements View.OnClickListener {
             httpURLConnection.connect();
             if (httpURLConnection.getResponseCode() == 200) {
                 result = streamToString(httpURLConnection.getInputStream());
-                log("response:"+result);
+                log("response:" + result);
             }
         } catch (IOException e) {
             e.printStackTrace();

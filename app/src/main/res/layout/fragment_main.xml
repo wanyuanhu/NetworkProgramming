@@ -9,18 +9,31 @@
         android:id="@+id/httpurlconnectionget"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/httpurlget"/>
-    <Button
-        android:id="@+id/httpurlconnectionpost"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/httpurlpost"/>
+        android:text="@string/httpurlget" />
 
-    <TextView
-        android:id="@+id/tv"
+    <Button
+        android:id="@+id/volleyString"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="test"
-        android:textSize="24sp" />
+        android:text="@string/volley_string" />
+
+    <Button
+        android:id="@+id/volleyJson"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/volley_json" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="vertical">
+
+        <TextView
+            android:id="@+id/tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="test"
+            android:textSize="24sp" />
+    </ScrollView>
 </LinearLayout>
