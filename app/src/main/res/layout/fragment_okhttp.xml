@@ -6,34 +6,28 @@
     android:orientation="vertical">
 
     <Button
-        android:id="@+id/httpurlconnectionget"
+        android:id="@+id/ok_get"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/httpurlget" />
+        android:text="@string/ok_get" />
 
     <Button
-        android:id="@+id/volleyString"
+        android:id="@+id/ok_post"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/volley_string" />
+        android:text="@string/ok_post" />
 
     <Button
-        android:id="@+id/volleyJson"
+        android:id="@+id/ok_pull"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/volley_json" />
+        android:text="@string/ok_pull" />
 
     <Button
-        android:id="@+id/volleyImage"
+        android:id="@+id/ok_push"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/volley_image" />
-
-    <Button
-        android:id="@+id/volleyImageLoader"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/volley_loader" />
+        android:text="@string/ok_push" />
 
     <ScrollView
         android:layout_width="match_parent"
@@ -41,7 +35,7 @@
         android:scrollbars="vertical">
 
         <TextView
-            android:id="@+id/tv"
+            android:id="@+id/ok_tv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
@@ -50,11 +44,8 @@
     </ScrollView>
 
     <ImageView
-        android:id="@+id/showImage"
+        android:id="@+id/ok_showImage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
-    <com.android.volley.toolbox.NetworkImageView
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:id="@+id/nw_image"/>
+
 </LinearLayout>

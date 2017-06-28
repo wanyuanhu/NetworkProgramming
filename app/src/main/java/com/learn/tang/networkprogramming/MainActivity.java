@@ -97,16 +97,16 @@ public class MainActivity extends AppCompatActivity {
         });
 
         MyFragment m1 = new MyFragment();
-        MyFragment m2 = new MyFragment();
+        MyOkHttp3Fragment m2 = new MyOkHttp3Fragment();
         MyFragment m3 = new MyFragment();
         list.add(m1);
         list.add(m2);
         list.add(m3);
-
+        String[] arr = {getString(R.string.page1)};
         tabhost = (FragmentTabHost) findViewById(android.R.id.tabhost);
         tabhost.setup(this, getSupportFragmentManager(), R.id.page);
         for (int i = 0; i < list.size(); i++) {
-            tabhost.addTab(tabhost.newTabSpec("page1").setIndicator(getTabIndicator(textArray[i])), list.get(i).getClass(), null);
+            tabhost.addTab(tabhost.newTabSpec(getString(textArray[i])).setIndicator(getTabIndicator(textArray[i])), list.get(i).getClass(), null);
         }
         tabhost.getTabWidget().getChildTabViewAt(0).setBackgroundResource(R.drawable.tab_select);
         vp.setAdapter(new FragmentPagerAdapter(getSupportFragmentManager()) {

@@ -1,6 +1,7 @@
 package com.learn.tang.networkprogramming;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -11,17 +12,22 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageLoader;
+import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.NetworkImageView;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.bigkoo.pickerview.OptionsPickerView;
 import com.learn.tang.bean.ProvinceBean;
+import com.learn.tang.util.BitmapCache;
 import com.learn.tang.util.GsonUtil;
 
 import org.json.JSONObject;
@@ -52,7 +58,9 @@ public class MyFragment extends Fragment implements View.OnClickListener {
     private static final int RESULT_URL = 1;
 
     private TextView tv;
-    private Button btn1, btn2, btn3;
+    private Button btn1, btn2, btn3, btn4, btn5;
+    private ImageView imageView;
+    private NetworkImageView niv;
 
     private RequestQueue mqueue;
 
@@ -119,7 +127,10 @@ public class MyFragment extends Fragment implements View.OnClickListener {
         super.onResume();
         log("resume");
         tv.setText("第" + index++ + "页");
-
+        ImageLoader imageLoader = new ImageLoader(mqueue,new BitmapCache());
+        niv.setDefaultImageResId(R.drawable.ico_default);
+        niv.setErrorImageResId(R.drawable.ico_default_err);
+        niv.setImageUrl("http://img06.tooopen.com/images/20170514/tooopen_sy_209849089662.jpg",imageLoader);
     }
 
     @Override
@@ -184,6 +195,25 @@ public class MyFragment extends Fragment implements View.OnClickListener {
                 });
                 mqueue.add(mjsonObjectRequest);
                 break;
+            case R.id.volleyImage:
+                ImageRequest imageRequest = new ImageRequest("http://img.my.csdn.net/uploads/201603/26/1458988468_5804.jpg", new Response.Listener<Bitmap>() {
+                    @Override
+                    public void onResponse(Bitmap response) {
+                        imageView.setImageBitmap(response);
+                    }
+                }, 0, 0, Bitmap.Config.RGB_565, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        imageView.setImageResource(R.drawable.ic_home_black_24dp);
+                    }
+                });
+                mqueue.add(imageRequest);
+                break;
+            case R.id.volleyImageLoader:
+                ImageLoader imageLoader = new ImageLoader(mqueue, new BitmapCache());
+                ImageLoader.ImageListener listener = ImageLoader.getImageListener(imageView, R.drawable.ico_default, R.drawable.ico_default_err);
+                imageLoader.get("http://img.my.csdn.net/uploads/201404/13/1397393290_5765.jpeg", listener, 200, 200);
+                break;
             default:
                 break;
         }
@@ -194,9 +224,15 @@ public class MyFragment extends Fragment implements View.OnClickListener {
         btn1 = (Button) view.findViewById(R.id.httpurlconnectionget);
         btn2 = (Button) view.findViewById(R.id.volleyString);
         btn3 = (Button) view.findViewById(R.id.volleyJson);
+        btn4 = (Button) view.findViewById(R.id.volleyImage);
+        btn5 = (Button) view.findViewById(R.id.volleyImageLoader);
+        imageView = (ImageView) view.findViewById(R.id.showImage);
+        niv = (NetworkImageView)view.findViewById(R.id.nw_image);
         btn1.setOnClickListener(this);
         btn2.setOnClickListener(this);
         btn3.setOnClickListener(this);
+        btn4.setOnClickListener(this);
+        btn5.setOnClickListener(this);
         startParse();
         if (null == mqueue) {
             mqueue = Volley.newRequestQueue(getContext());

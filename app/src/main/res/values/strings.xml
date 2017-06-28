@@ -3,11 +3,17 @@
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
-    <string name="page1">page1</string>
-    <string name="page2">page2</string>
-    <string name="page3">page3</string>
+    <string name="page1">volley</string>
+    <string name="page2">okhttp3</string>
+    <string name="page3">Retrofit</string>
     <string name="httpurlget">HttpUrlConnectionget</string>
     <string name="volley_string">volleyString</string>
     <string name="volley_json">volleyJson</string>
+    <string name="volley_image">volleyImage</string>
+    <string name="volley_loader">volleyImageLoader</string>
     <string name="weatherURL">http://www.weather.com.cn/data/sk/%1$s.html</string>
+    <string name="ok_get">okHttpGet</string>
+    <string name="ok_post">okHttpPost</string>
+    <string name="ok_pull">下载文件</string>
+    <string name="ok_push">上传文件</string>
 </resources>
