@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
 
         MyFragment m1 = new MyFragment();
         MyOkHttp3Fragment m2 = new MyOkHttp3Fragment();
-        MyFragment m3 = new MyFragment();
+        MyRetrofitFragment m3 = new MyRetrofitFragment();
         list.add(m1);
         list.add(m2);
         list.add(m3);

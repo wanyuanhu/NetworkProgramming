@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
+
+    <Button
+        android:id="@+id/retrofit_get"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/retro_get" />
+
+    <Button
+        android:id="@+id/retrofit_post"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/retro_post" />
+
+    <Button
+        android:id="@+id/retrofit_pull"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/retro_pull" />
+
+    <Button
+        android:id="@+id/retrofit_push"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/retro_push" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="vertical">
+
+        <TextView
+            android:id="@+id/retrofit_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="test"
+            android:textSize="24sp" />
+    </ScrollView>
+
+    <ImageView
+        android:id="@+id/retrofit_showImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+</LinearLayout>

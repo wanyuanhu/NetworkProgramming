@@ -16,4 +16,8 @@
     <string name="ok_post">okHttpPost</string>
     <string name="ok_pull">下载文件</string>
     <string name="ok_push">上传文件</string>
+    <string name="retro_get">retrofirGet</string>
+    <string name="retro_post">retrofitPost</string>
+    <string name="retro_pull">下载文件</string>
+    <string name="retro_push">上传文件</string>
 </resources>
