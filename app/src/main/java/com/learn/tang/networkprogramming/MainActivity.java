@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
     private ViewPager vp;
     private ShareActionProvider share;
     private List<Fragment> list = new ArrayList<Fragment>();
-    private int[] textArray = {R.string.page1, R.string.page1, R.string.page1};
+    private int[] textArray = {R.string.page1, R.string.page2, R.string.page3};
     private ImageView imageView;
     private int bmpw = 0; // 游标宽度
     private int offset = 0;// // 动画图片偏移量
