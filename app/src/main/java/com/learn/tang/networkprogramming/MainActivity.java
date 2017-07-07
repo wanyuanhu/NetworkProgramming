@@ -18,11 +18,13 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.TabHost;
+import android.widget.TabWidget;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -35,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
     private ViewPager vp;
     private ShareActionProvider share;
     private List<Fragment> list = new ArrayList<Fragment>();
-    private int[] textArray = {R.string.page1, R.string.page2, R.string.page3};
+    private String[] textArray = null;
     private ImageView imageView;
     private int bmpw = 0; // 游标宽度
     private int offset = 0;// // 动画图片偏移量
@@ -46,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
+        textArray = getResources().getStringArray(R.array.pages);
         initView();
         initCursorPos();
         setListener();
@@ -102,11 +105,11 @@ public class MainActivity extends AppCompatActivity {
         list.add(m1);
         list.add(m2);
         list.add(m3);
-        String[] arr = {getString(R.string.page1)};
+        list.add(new MyDesignPatternFragment());
         tabhost = (FragmentTabHost) findViewById(android.R.id.tabhost);
         tabhost.setup(this, getSupportFragmentManager(), R.id.page);
         for (int i = 0; i < list.size(); i++) {
-            tabhost.addTab(tabhost.newTabSpec(getString(textArray[i])).setIndicator(getTabIndicator(textArray[i])), list.get(i).getClass(), null);
+            tabhost.addTab(tabhost.newTabSpec(textArray[i]).setIndicator(getTabIndicator(textArray[i])), list.get(i).getClass(), null);
         }
         tabhost.getTabWidget().getChildTabViewAt(0).setBackgroundResource(R.drawable.tab_select);
         vp.setAdapter(new FragmentPagerAdapter(getSupportFragmentManager()) {
@@ -131,39 +134,12 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onPageSelected(int position) {
+                TabWidget widget = tabhost.getTabWidget();
+                int oldFocusability = widget.getDescendantFocusability();
+                widget.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
                 tabhost.setCurrentTab(position);
+                widget.setDescendantFocusability(oldFocusability);
                 setSelect(position);
-                int one = offset * 2 + bmpw;
-                Animation animation = null;
-                switch (position) {
-                    case 0:
-                        if (currIndex == 1) {
-                            animation = new TranslateAnimation(one, 0, 0, 0);
-                        } else if (currIndex == 2) {
-                            animation = new TranslateAnimation(one * 2, 0, 0, 0);
-                        }
-                        break;
-                    case 1:
-                        if (currIndex == 0) {
-                            animation = new TranslateAnimation(offset, one, 0, 0);
-                        } else if (currIndex == 2) {
-                            animation = new TranslateAnimation(one * 2, one, 0, 0);
-                        }
-                        break;
-                    case 2:
-                        if (currIndex == 1) {
-                            animation = new TranslateAnimation(one, one * 2, 0, 0);
-                        } else if (currIndex == 0) {
-                            animation = new TranslateAnimation(offset, one * 2, 0, 0);
-                        }
-                        break;
-                    default:
-                        break;
-                }
-                currIndex = position;
-                animation.setFillAfter(true);
-                animation.setDuration(300);
-                imageView.startAnimation(animation);
             }
 
             @Override
@@ -179,7 +155,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private View getTabIndicator(int title_res) {
+    private View getTabIndicator(String title_res) {
         LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Service.LAYOUT_INFLATER_SERVICE);
         View view = layoutInflater.inflate(R.layout.view_tab, null, false);
         TextView textViewTitle = (TextView) view.findViewById(R.id.tabhosttitle);

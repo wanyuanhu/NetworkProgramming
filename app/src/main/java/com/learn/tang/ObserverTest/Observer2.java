@@ -1,0 +1,21 @@
+package com.learn.tang.ObserverTest;
+
+import com.learn.tang.util.CommonUtil;
+
+/**
+ * Created by Tang on 2017/7/7.
+ */
+
+public class Observer2 implements Observer {
+    private static int num = 0;
+    @Override
+    public void update() {
+        CommonUtil.logSelf("observer2 has received");
+        num++;
+    }
+
+    @Override
+    public int getNum() {
+        return num;
+    }
+}

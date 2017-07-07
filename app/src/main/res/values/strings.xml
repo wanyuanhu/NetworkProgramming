@@ -1,11 +1,14 @@
 <resources>
+    <string-array name="pages">
+        <item name="page1">volley</item>
+        <item name="page2">okhttp3</item>
+        <item name="page3">Retrofit</item>
+        <item name="pattern">design pattern</item>
+    </string-array>
     <string name="app_name">NetworkProgramming</string>
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
-    <string name="page1">volley</string>
-    <string name="page2">okhttp3</string>
-    <string name="page3">Retrofit</string>
     <string name="httpurlget">HttpUrlConnectionget</string>
     <string name="volley_string">volleyString</string>
     <string name="volley_json">volleyJson</string>
@@ -20,4 +23,9 @@
     <string name="retro_post">retrofitPost</string>
     <string name="retro_pull">下载文件</string>
     <string name="retro_push">上传文件</string>
+    <string name="builder">builder</string>
+    <string name="observer">observers</string>
+    <string name="adapter">Adapter</string>
+    <string name="decorator">Decorator</string>
+    <string name="proxy">proxy</string>
 </resources>
