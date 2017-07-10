@@ -16,8 +16,18 @@ import com.learn.tang.ObserverTest.Observer;
 import com.learn.tang.ObserverTest.Observer1;
 import com.learn.tang.ObserverTest.Observer2;
 import com.learn.tang.ObserverTest.Subject;
+import com.learn.tang.adapter.Phone;
+import com.learn.tang.adapter.Phone1;
+import com.learn.tang.adapter.Phone2;
+import com.learn.tang.adapter.XiaoMi;
+import com.learn.tang.adapter.XiaomiWrapper;
 import com.learn.tang.builder.Computer;
 import com.learn.tang.builder.MoonComputerBuilder;
+import com.learn.tang.decorator.Decorator;
+import com.learn.tang.decorator.Source;
+import com.learn.tang.decorator.Sourceable;
+import com.learn.tang.proxy.Proxy;
+import com.learn.tang.proxy.SourceProxy;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -105,8 +115,11 @@ public class MyDesignPatternFragment extends Fragment {
         super.onDestroy();
     }
 
+    private int clickNum = 0;
+
     @OnClick({R.id.builder, R.id.observer, R.id.adapter, R.id.decorator, R.id.proxy})
     public void onViewClicked(View view) {
+
         switch (view.getId()) {
             case R.id.builder:
                 builder();
@@ -115,10 +128,27 @@ public class MyDesignPatternFragment extends Fragment {
                 observer();
                 break;
             case R.id.adapter:
+                switch (clickNum++ % 3) {
+                    case 0:
+                        classAdapter();
+                        break;
+                    case 1:
+                        objectAdapter();
+                        break;
+                    case 2:
+                        interfaceAdapter();
+                        break;
+                    default:
+                        break;
+                }
                 break;
             case R.id.decorator:
+                Sourceable sourceable = new Decorator(new Source());
+                patternTv.setText(sourceable.method());
                 break;
             case R.id.proxy:
+                SourceProxy sourceProxy = new Proxy();
+                patternTv.setText(sourceProxy.method());
                 break;
         }
     }
@@ -138,5 +168,32 @@ public class MyDesignPatternFragment extends Fragment {
                 .buildMainboard("华硕ROG")
                 .buildRam("SK").create();
         patternTv.setText(computer.toString());
+    }
+
+    private void classAdapter() {
+        XiaoMi xiaoMi = new XiaoMi();
+        StringBuilder sb = new StringBuilder();
+        sb.append(xiaoMi.store());
+        sb.append(xiaoMi.takeAlong());
+        patternTv.setText(sb.toString());
+    }
+
+    private void objectAdapter() {
+        XiaomiWrapper xiaomiWrapper = new XiaomiWrapper(new Phone());
+        StringBuilder sb = new StringBuilder();
+        sb.append(xiaomiWrapper.store());
+        sb.append(xiaomiWrapper.takeAlong());
+        patternTv.setText(sb.toString());
+    }
+
+    private void interfaceAdapter() {
+        StringBuilder sb = new StringBuilder();
+        Phone1 p1 = new Phone1();
+        Phone2 p2 = new Phone2();
+        sb.append(p1.store());
+        sb.append(p1.takeAlong());
+        sb.append(p2.store());
+        sb.append(p2.takeAlong());
+        patternTv.setText(sb.toString());
     }
 }
