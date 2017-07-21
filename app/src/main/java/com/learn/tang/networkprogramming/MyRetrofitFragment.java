@@ -19,6 +19,12 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
+import rx.Observable;
+import rx.Observer;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action0;
+import rx.functions.Action1;
+import rx.schedulers.Schedulers;
 
 
 /**
@@ -72,6 +78,7 @@ public class MyRetrofitFragment extends Fragment implements View.OnClickListener
                 getIpInfoByPost("59.108.54.37");
                 break;
             case R.id.retrofit_pull:
+                rxJavaText();
                 break;
             case R.id.retrofit_push:
                 break;
@@ -135,5 +142,16 @@ public class MyRetrofitFragment extends Fragment implements View.OnClickListener
             public void onFailure(Call<IpModel> call, Throwable t) {
             }
         });
+    }
+    private void rxJavaText(){
+        Observable.just(1,2,3,4)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<Integer>(){
+                    @Override
+                    public void call(Integer integer) {
+                        Log.d(TAG, "number:" + integer+",thread:"+Thread.currentThread().getName());
+                    }
+                });
     }
 }
