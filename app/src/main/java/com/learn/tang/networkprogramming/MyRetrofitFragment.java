@@ -11,8 +11,14 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.learn.tang.bean.Book;
 import com.learn.tang.bean.IpModel;
+import com.learn.tang.presenter.BookPresenter;
+import com.learn.tang.presenter.BookView;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -20,9 +26,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
 import rx.Observable;
-import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
@@ -38,10 +42,17 @@ public class MyRetrofitFragment extends Fragment implements View.OnClickListener
 
     private static int index = 0;
     private static final String TAG = "LIFE";
-
-    private TextView tv;
-    private Button btn1, btn2, btn3, btn4;
-
+    @BindView(R.id.retrofit_get)
+    Button btn1;
+    @BindView(R.id.retrofit_post)
+    Button btn2;
+    @BindView(R.id.retrofit_pull)
+    Button btn3;
+    @BindView(R.id.retrofit_push)
+    Button btn4;
+    @BindView(R.id.retrofit_tv)
+    TextView tv;
+    private BookPresenter mBookPresenter = new BookPresenter(getContext());
     private void log(String method) {
         Log.d(TAG, method);
     }
@@ -50,11 +61,23 @@ public class MyRetrofitFragment extends Fragment implements View.OnClickListener
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_retrofit, container, false);
-        initView(view);
+        ButterKnife.bind(this, view);
         log("createview");
+        mBookPresenter.onCreate();
+        mBookPresenter.attachView(mBookView);
         return view;
     }
+    private BookView mBookView = new BookView() {
+        @Override
+        public void onSuccess(Book mBook) {
+            tv.setText(mBook.toString());
+        }
 
+        @Override
+        public void onError(String result) {
+            Toast.makeText(getActivity(),result, Toast.LENGTH_SHORT).show();
+        }
+    };
     @Override
     public void onResume() {
         super.onResume();
@@ -66,9 +89,10 @@ public class MyRetrofitFragment extends Fragment implements View.OnClickListener
     public void onDestroy() {
         super.onDestroy();
         log("destroy");
+        mBookPresenter.onStop();
     }
 
-    @Override
+    @OnClick({R.id.retrofit_get, R.id.retrofit_post, R.id.retrofit_pull, R.id.retrofit_push})
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.retrofit_get:
@@ -81,22 +105,11 @@ public class MyRetrofitFragment extends Fragment implements View.OnClickListener
                 rxJavaText();
                 break;
             case R.id.retrofit_push:
+                mBookPresenter.getSearchBooks("金瓶梅", null, 0, 1);
                 break;
             default:
                 break;
         }
-    }
-
-    private void initView(View view) {
-        tv = (TextView) view.findViewById(R.id.retrofit_tv);
-        btn1 = (Button) view.findViewById(R.id.retrofit_get);
-        btn2 = (Button) view.findViewById(R.id.retrofit_post);
-        btn3 = (Button) view.findViewById(R.id.retrofit_pull);
-        btn4 = (Button) view.findViewById(R.id.retrofit_push);
-        btn1.setOnClickListener(this);
-        btn2.setOnClickListener(this);
-        btn3.setOnClickListener(this);
-        btn4.setOnClickListener(this);
     }
 
     private void getIpInformation(String ip) {
@@ -104,15 +117,15 @@ public class MyRetrofitFragment extends Fragment implements View.OnClickListener
         Retrofit retrofit = new Retrofit.Builder().baseUrl(url)
                 .addConverterFactory(ScalarsConverterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create()).build();
-        retrofit.create(IpService.class).getIpMsg(ip).enqueue(new retrofit2.Callback<IpModel>() {
+        retrofit.create(IpService.class).getIpMsg(ip).enqueue(new Callback<IpModel>() {
             @Override
-            public void onResponse(retrofit2.Call<IpModel> call, retrofit2.Response<IpModel> response) {
+            public void onResponse(Call<IpModel> call, Response<IpModel> response) {
                 String country = response.body().getData().getCountry();
                 Toast.makeText(getContext(), country, Toast.LENGTH_LONG).show();
             }
 
             @Override
-            public void onFailure(retrofit2.Call<IpModel> call, Throwable t) {
+            public void onFailure(Call<IpModel> call, Throwable t) {
                 Log.e(TAG, t.getMessage(), t);
             }
         });
@@ -143,15 +156,21 @@ public class MyRetrofitFragment extends Fragment implements View.OnClickListener
             }
         });
     }
-    private void rxJavaText(){
-        Observable.just(1,2,3,4)
+
+    private void rxJavaText() {
+        Observable.just(1, 2, 3, 4)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<Integer>(){
+                .subscribe(new Action1<Integer>() {
                     @Override
                     public void call(Integer integer) {
-                        Log.d(TAG, "number:" + integer+",thread:"+Thread.currentThread().getName());
+                        Log.d(TAG, "number:" + integer + ",thread:" + Thread.currentThread().getName());
                     }
                 });
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
     }
 }
