@@ -1,5 +1,6 @@
 package com.learn.tang.networkprogramming;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -53,6 +54,7 @@ public class MyRetrofitFragment extends Fragment implements View.OnClickListener
     @BindView(R.id.retrofit_tv)
     TextView tv;
     private BookPresenter mBookPresenter = new BookPresenter(getContext());
+
     private void log(String method) {
         Log.d(TAG, method);
     }
@@ -67,6 +69,7 @@ public class MyRetrofitFragment extends Fragment implements View.OnClickListener
         mBookPresenter.attachView(mBookView);
         return view;
     }
+
     private BookView mBookView = new BookView() {
         @Override
         public void onSuccess(Book mBook) {
@@ -75,9 +78,10 @@ public class MyRetrofitFragment extends Fragment implements View.OnClickListener
 
         @Override
         public void onError(String result) {
-            Toast.makeText(getActivity(),result, Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), result, Toast.LENGTH_SHORT).show();
         }
     };
+
     @Override
     public void onResume() {
         super.onResume();
@@ -102,7 +106,7 @@ public class MyRetrofitFragment extends Fragment implements View.OnClickListener
                 getIpInfoByPost("59.108.54.37");
                 break;
             case R.id.retrofit_pull:
-                rxJavaText();
+                startActivity(new Intent("com.tang.dagger2ActivityTest"));
                 break;
             case R.id.retrofit_push:
                 mBookPresenter.getSearchBooks("金瓶梅", null, 0, 1);
